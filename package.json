@@ -13,12 +13,13 @@
     "bcryptjs": "^2.4.3",
     "connect-mongodb-session": "^3.1.1",
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "express": "^4.18.1",
     "express-session": "^1.17.3",
+    "express-validator": "^6.14.2",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.6.5",
     "multer": "^1.4.5-lts.1",
-    "passport": "^0.6.0",
-    "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "port": "^0.8.1"
   }
