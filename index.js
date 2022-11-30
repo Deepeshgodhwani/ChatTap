@@ -9,6 +9,18 @@ app.use(cors());
 
 app.use(express.json());
 
+const chatServer=require('http').Server(app);
+
+const chatSocket=require('./config/chatSocket').chatSocket(chatServer);
+
+chatServer.listen(4000,(err)=>{
+        if(err){"error in listening chat server"}else{
+          console.log("chat server is running successfully on port : 4000");
+        }                     
+})
+
+
+
 
 
 app.use("/api/auth", require("./routes/auth"));
