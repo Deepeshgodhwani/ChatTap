@@ -10,10 +10,8 @@ const chatBoxSchema=mongoose.Schema({
     isGroupChat:{type:Boolean,default:false},
     users:[
         {
-            userId:{
-                type:mongoose.Schema.Types.ObjectId,
-                ref:"user"
-            }
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"user"
         }
     ],
     admin:{
