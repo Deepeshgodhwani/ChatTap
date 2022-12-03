@@ -9,14 +9,14 @@ module.exports.chatSocket=(server)=>{
      })
 
      io.on('connection',(socket)=>{
-          console.log("Connection Estaiblished ");
+          console.log("connected to socketd.io");
           socket.on("setup",(userData)=>{
                socket.join(userData._id);
                socket.emit("connected");
-          })
+          }) 
 
-          socket.on("join_room",(room)=>{
-               socket.join("delfault");
+          socket.on("join chat",(room)=>{
+               socket.join(room);
                console.log("user joined ",room);
           })
 

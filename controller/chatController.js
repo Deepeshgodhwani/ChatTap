@@ -1,18 +1,68 @@
 
 const Chat = require('../models/chat-box');
-const ObjectId = require('bson-objectid')
+const ObjectId = require('bson-objectid');
+const Message =require('../models/message');
+
+
+
+module.exports.savemessage=async(req,res)=>{
+        
+    try {
+        
+        const {content,chatId}=req.body;
+
+        let message=await Message.create({
+            content,
+            sender:req.user,
+            chatId
+         })
+
+         let detailedMessage=await Message.findById(message._id).populate('sender','-password');
+
+         return res.send(detailedMessage);
+         
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).send("Internal Server Error");
+    }
+}
+
+
+module.exports.savemessage=async(req,res)=>{
+        
+    try {
+        
+        const {chatId}=req.query;
+         let detailedMessage=await Message.find(chatId).populate('sender','-password');
+         return res.send(detailedMessage);
+         
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).send("Internal Server Error");
+    }
+}
+
 
 
 module.exports.fetchChat=async(req,res)=>{
 
     try {
-        let chats=await Chat.find({users:{ $eleMatch :{$eq:req.user}}});
+        let chats=await Chat.find({users:ObjectId(req.user)})
+        .populate('users','-password')
+        .populate({
+            path:'latestMessage',
+            ref:'message',
+            populate:{
+                path:'sender',
+                ref:'user',
+                select:"name,email,avtar"
+            }
+        }).populate('admin');
          return res.send(chats);
     } catch (error) {
-        console.error("internal server error",error);
+        console.error(error.message);
+        res.status(200).send("Internal Server Error");
     }
-      
-   
 }
 
 
@@ -36,10 +86,9 @@ module.exports.accessChat= async (req,res)=>{
             }
         })
 
-    
-
-        if(isChat.length>0){
-            return res.send(isChat);
+        
+        if(isChat.length>0){   
+            return res.send(isChat[0]);
         }else{
             let chat = await Chat.create({
                 isGroupChat:false,
@@ -48,7 +97,11 @@ module.exports.accessChat= async (req,res)=>{
 
             let fullChat=await Chat.findById(chat._id)
             .populate('users','-password');
-            return res.send(fullChat);
+            let data={
+                messages:false,
+                chatroom:fullChat
+            }
+            return res.send(data);
         }
      } catch (error) {
         console.error(error.message);
