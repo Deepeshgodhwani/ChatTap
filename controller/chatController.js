@@ -2,6 +2,7 @@
 const Chat = require('../models/chat-box');
 const ObjectId = require('bson-objectid');
 const Message =require('../models/message');
+var mongoose = require('mongoose');
 
 
 
@@ -11,14 +12,24 @@ module.exports.savemessage=async(req,res)=>{
         
         const {content,chatId}=req.body;
 
+
         let message=await Message.create({
             content,
             sender:req.user,
             chatId
          })
 
-         let detailedMessage=await Message.findById(message._id).populate('sender','-password');
 
+         if(req.body.noty){
+            message.noty=true;
+            message.save();
+         }
+
+
+         let chat=await Chat.findById(chatId);
+         chat.latestMessage=message._id;
+         chat.save();
+         let detailedMessage=await Message.findById(message._id).populate('sender','-password').populate('chatId');
          return res.send(detailedMessage);
          
     } catch (error) {
@@ -28,12 +39,12 @@ module.exports.savemessage=async(req,res)=>{
 }
 
 
-module.exports.savemessage=async(req,res)=>{
+module.exports.fetchMessages=async(req,res)=>{
         
     try {
-        
-        const {chatId}=req.query;
-         let detailedMessage=await Message.find(chatId).populate('sender','-password');
+        const {Id}=req.query;
+         let chatId=mongoose.Types.ObjectId(Id);
+         let detailedMessage=await Message.find({chatId:chatId}).populate("sender","-password");
          return res.send(detailedMessage);
          
     } catch (error) {
@@ -54,8 +65,6 @@ module.exports.fetchChat=async(req,res)=>{
             ref:'message',
             populate:{
                 path:'sender',
-                ref:'user',
-                select:"name,email,avtar"
             }
         }).populate('admin');
          return res.send(chats);
@@ -67,7 +76,7 @@ module.exports.fetchChat=async(req,res)=>{
 
 
 module.exports.accessChat= async (req,res)=>{
-     try {
+     try {   
           const {userTwo} =req.query;
         let isChat=await Chat.find({
             isGroupChat:false,
@@ -85,8 +94,6 @@ module.exports.accessChat= async (req,res)=>{
                 select:"name,email,avtar"
             }
         })
-
-        
         if(isChat.length>0){   
             return res.send(isChat[0]);
         }else{
@@ -95,13 +102,10 @@ module.exports.accessChat= async (req,res)=>{
                 users:[req.user,userTwo]
             })
 
+
             let fullChat=await Chat.findById(chat._id)
             .populate('users','-password');
-            let data={
-                messages:false,
-                chatroom:fullChat
-            }
-            return res.send(data);
+            return res.send(fullChat);
         }
      } catch (error) {
         console.error(error.message);
@@ -114,18 +118,9 @@ module.exports.createGroup =async(req,res)=>{
 
     try {
 
-        const {chatName,users}=req.body;
-        
-        let isChat=await Chat.findOne({chatname:chatName})
-
-        if(isChat){
-            return res.status(400).json({
-                "error":true,
-                "message":"Chat is already exists"
-            })
-        }
-
-        if(users.length<=2){
+        const {chatName,selectedUsersId}=req.body;
+         selectedUsersId.push(req.user);
+        if(selectedUsersId.length<=2){
           return res.status(400).json({
               "error":true,
               "message":"Minimum users should be three"
@@ -135,7 +130,7 @@ module.exports.createGroup =async(req,res)=>{
         let newChat =await Chat.create({
             chatname:chatName,
             isGroupChat:true,
-            users:users,
+            users:selectedUsersId,
             admin:req.user
         })
         
@@ -148,6 +143,33 @@ module.exports.createGroup =async(req,res)=>{
         res.status(200).send("Internal Server Error");  
     } 
       
+}
+
+
+module.exports.accessGroupChat=async(req,res)=>{
+     
+    try {
+        let chat=await Chat.findById(req.query.chatId)
+        .populate("users","-password")
+        .populate({
+            path:'latestMessage',
+            ref:'message',
+            populate:{
+                path:'sender',
+                ref:'user',
+                select:"name,email,avtar"
+            }
+        }).populate('admin',"-password"); 
+
+
+        
+         return res.send(chat);
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(200).send("Internal Server Error");
+    }
+     
 }
 
 module.exports.renameGroup=async(req,res)=>{

@@ -20,10 +20,18 @@ module.exports.chatSocket=(server)=>{
                console.log("user joined ",room);
           })
 
-          socket.on("send_message",(data)=>{
-              console.log("message sent",data)
-               socket.join("default");
-               io.in("default").emit("receive_message",data);
+          socket.on("new_message",(message)=>{
+               var chat=message.chatId;
+
+               if(!chat.users) return consol.log("chat.users not defined");
+                
+               chat.users.forEach(user=>{
+                    if(user==message.sender._id) return ;
+                       
+                    socket.in(user).emit("message_recieved",message);
+
+               })
+              
           })
      })
 }
