@@ -11,6 +11,10 @@ const messageSchema=mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'chat'
     },
+    created_date:{
+        type:Date,
+        default:Date.now
+    }
     
 },{
     timestamps:true,

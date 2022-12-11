@@ -21,9 +21,14 @@ const chatBoxSchema=mongoose.Schema({
     latestMessage:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'message'
+    },vanishMode:{
+        type:Boolean,
+        default:false
+    },
+    created_date:{
+        type:Date,
+        default:Date.now
     }
-},{
-    timesstamps:true,
 })
 
 
