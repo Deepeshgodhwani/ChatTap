@@ -22,10 +22,11 @@ router.post(
       // if there errors,return bad request and the errors
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        // console.log(req);
         return res.status(400).json({ error: errors.array() });
       }
        
-      //check whether the user  with email exists already
+      // check whether the user  with email exists already
        
       let userr = await User.findOne({ email: req.body.email });
       if (userr) {
@@ -41,31 +42,16 @@ router.post(
         name: req.body.name,
         email: req.body.email,
         password: encryptedpass
-    });
-    
+     });
 
-      if (req.file) {
-        User.uploadedAvtar(req,res, async function(err){
-            if(err){"error in multer controller",err}else{                
-                 
-                user.avtar=User.avtarPath+'/'+req.file.filename;
-                
-                const data = {
-                    userId: user._id,
-                };
-                
-                const authToken = jwt.sign(data, jwtSecret);
-                return res.send({ error: false, authToken });
-              };
-            })
-      }else{
-        const data = {
-            userId: user._id,
-        };
+    
+     const data = {
+         userId: user._id,
+     };
         
-        const authToken = jwt.sign(data, jwtSecret);
-        return res.send({ error: false, authToken });
-      }
+     const authToken = jwt.sign(data, jwtSecret);
+      return res.send({ error: false, authToken });
+    
     } catch (err) {
       console.error(err.message);
       res.status(200).send("Internal Server Error");

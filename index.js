@@ -5,14 +5,18 @@ const cors = require('cors');
 const app = express();
 
 
-app.use(cors());
 
+app.use(cors());
 app.use(express.json());
+
+
+
 
 const chatServer=require('http').Server(app);
 
 const chatSocket=require('./config/chatSocket').chatSocket(chatServer);
 
+app.use('/uploads',express.static(__dirname+'/uploads'));
 chatServer.listen(4000,(err)=>{
         if(err){"error in listening chat server"}else{
           console.log("chat server is running successfully on port : 4000");

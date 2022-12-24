@@ -2,6 +2,7 @@
 const Chat = require('../models/chat-box');
 const ObjectId = require('bson-objectid');
 const Message =require('../models/message');
+const User=require('../models/user');
 var mongoose = require('mongoose');
 
 
@@ -58,7 +59,7 @@ module.exports.fetchMessages=async(req,res)=>{
 module.exports.fetchChat=async(req,res)=>{
 
     try {
-        let chats=await Chat.find({users:ObjectId(req.user)})
+        let chats=await  Chat.find({users:ObjectId(req.user)})
         .populate('users','-password')
         .populate({
             path:'latestMessage',
@@ -66,7 +67,8 @@ module.exports.fetchChat=async(req,res)=>{
             populate:{
                 path:'sender',
             }
-        }).populate('admin');
+        }).populate('admin')
+        .sort('-updatedAt');
          return res.send(chats);
     } catch (error) {
         console.error(error.message);
@@ -117,7 +119,6 @@ module.exports.accessChat= async (req,res)=>{
 module.exports.createGroup =async(req,res)=>{
 
     try {
-
         const {chatName,selectedUsersId}=req.body;
          selectedUsersId.push(req.user);
         if(selectedUsersId.length<=2){
@@ -126,6 +127,8 @@ module.exports.createGroup =async(req,res)=>{
               "message":"Minimum users should be three"
           })
         }
+
+        
   
         let newChat =await Chat.create({
             chatname:chatName,
@@ -133,6 +136,13 @@ module.exports.createGroup =async(req,res)=>{
             users:selectedUsersId,
             admin:req.user
         })
+
+
+        if(req.body.pic){
+            newChat.profilePic=req.body.pic;
+            newChat.save();
+        }
+
         
         let FULLCHAT=await Chat.findById(newChat._id)
         .populate('users','-password')
@@ -161,8 +171,6 @@ module.exports.accessGroupChat=async(req,res)=>{
             }
         }).populate('admin',"-password"); 
 
-
-        
          return res.send(chat);
 
     } catch (error) {
@@ -175,29 +183,71 @@ module.exports.accessGroupChat=async(req,res)=>{
 module.exports.renameGroup=async(req,res)=>{
       
    try {
-        return ;
+       return;  
+
    } catch (error) {
-        console.error(err.message);
+        console.error(error.message);
         res.status(200).send("Internal Server Error");
    }
 }
 
-module.exports.removeGroup=async(req,res)=>{
+module.exports.removeUser=async(req,res)=>{
       
   try {
-    return ;
+       
+        const {chatId,userId}=req.query;
+        let group=await Chat.findById(chatId);
+        let index=group.users.indexOf(userId);
+        group.users.splice(index,1);
+        group.save();
+        return res.send({success:true});
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
     res.status(200).send("Internal Server Error");
   }
 }
 
-module.exports.addGroup=async(req,res)=>{
+module.exports.addUser=async(req,res)=>{
       
-    try {
-        return ;
+    try { 
+
+        const {chatId,usersId}=req.body;    
+        let group=await Chat.findById(chatId);
+        usersId.map((Id)=>{
+            group.users.push(Id);
+            return ;
+        });
+        group.save();
+
+        return res.send({success:true});
     } catch (error) {
-        console.error(err.message);
+        console.error(error.message);
+        res.status(200).send("Internal Server Error");
+    }
+}
+
+
+module.exports.changePic=async(req,res)=>{
+     
+
+    try {
+        console.log(req.query);
+        const {isGroupChat,Id,pic}=req.query;
+        
+        if(isGroupChat){ 
+            let chat=await Chat.findById(Id);
+            chat.set({profilePic:pic});
+            await chat.save();
+        }else{ 
+            let user =await User.findById(Id);
+            user.set({avtar:pic});
+            await user.save();
+        }
+
+        return res.send({success:true});
+
+    } catch (error) {
+        console.error(error.message);
         res.status(200).send("Internal Server Error");
     }
 }
