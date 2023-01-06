@@ -25,33 +25,31 @@ router.post(
         // console.log(req);
         return res.status(400).json({ error: errors.array() });
       }
-       
+
       // check whether the user  with email exists already
-       
+
       let userr = await User.findOne({ email: req.body.email });
       if (userr) {
-          return res.send({ error: "user is already exists" });
+        return res.send({ error: "user is already exists" });
       }
-      
+
       // to encrypt password before saving //
-      
+
       const salt = await bcrypt.genSaltSync(10);
       const encryptedpass = await bcrypt.hash(req.body.password, salt);
 
       let user = await User.create({
         name: req.body.name,
         email: req.body.email,
-        password: encryptedpass
-     });
+        password: encryptedpass,
+      });
 
-    
-     const data = {
-         userId: user._id,
-     };
-        
-     const authToken = jwt.sign(data, jwtSecret);
+      const data = {
+        userId: user._id,
+      };
+
+      const authToken = jwt.sign(data, jwtSecret);
       return res.send({ error: false, authToken });
-    
     } catch (err) {
       console.error(err.message);
       res.status(200).send("Internal Server Error");
