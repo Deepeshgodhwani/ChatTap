@@ -5,8 +5,8 @@ const chatCont=require('../controller/chatController');
 const userCont =require('../controller/userController');
 
 
-const {fetchChat,renameGroup,removeUser,addUser,
-    accessChat,createGroup,savemessage,fetchMessages,accessGroupChat,changePic}=chatCont;
+const {fetchChat,changeName,removeUser,addUser,
+    accessChat,createGroup,savemessage,fetchMessages,accessGroupChat,changePic,countUnseenMssge}=chatCont;
 
 router.get('/searchUser',fetchUser,userCont.searchUser);
 router.get('/accessChat',fetchUser,accessChat);
@@ -15,10 +15,11 @@ router.post('/message',fetchUser,savemessage);
 router.post('/createGroup',fetchUser,createGroup);
 router.get('/accessGroupChat',fetchUser,accessGroupChat);
 router.get('/fetchChats',fetchUser,fetchChat);
-router.get('/renameGroup',fetchUser,renameGroup);
+router.post('/changeName',fetchUser,changeName);
 router.get('/removeUser',fetchUser,removeUser);
 router.get('/changePic',fetchUser,changePic)
 router.post('/addUser',addUser);
+router.get('/countMssg',fetchUser,countUnseenMssge);
 
 
 

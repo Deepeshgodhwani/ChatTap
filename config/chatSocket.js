@@ -20,19 +20,27 @@ module.exports.chatSocket = (server) => {
     socket.on("new_message", (message) => {
       var chat = message.chatId;
       if (!chat.users) return consol.log("chat users not defined");
-      console.log("hitt");
-      chat.users.forEach((user) => {
-        if (user == message.sender._id) return;
-        socket.in(user).emit("message_recieved", message);
+      chat.users.forEach((members) => {
+        if (members.user._id=== message.sender._id) return;
+        let data={
+             message:message,
+             receiverId:members.user._id
+        }
+        socket.in(members.user._id).emit("message_recieved",data);
       });
     });
 
     socket.on("group_created", (group) => {
-      group.users.forEach((user) => {
-        if (user._id == group.admin._id) return;
-        console.log(user._id);
-        socket.in(user._id).emit("created_group", group);
+      group.users.forEach((members) => {
+        if (members.user._id == group.admin._id) return;
+        socket.in(members.user._id).emit("created_group", group);
       });
     });
+
+    socket.on("member_status",(data)=>{
+              data.users.forEach(members=>{
+                socket.in(members.user).emit("groupRemoved", data.status);  
+              })
+    })
   });
 };

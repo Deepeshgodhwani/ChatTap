@@ -9,10 +9,18 @@ const chatBoxSchema=mongoose.Schema({
     },
     isGroupChat:{type:Boolean,default:false},
     users:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"user"
+     {
+        user:{
+           type:mongoose.Schema.Types.ObjectId,
+           ref:"user"
+        },isRemoved:{
+            type:Boolean,
+            default:false,
+        },unseenMsg:{
+            type:Number,
+            default:0
         }
+    }  
     ],
     admin:{
         type:mongoose.Schema.Types.ObjectId,
@@ -32,9 +40,6 @@ const chatBoxSchema=mongoose.Schema({
 },{
     timestamps:true
 })
-
-
-
 
 
 
