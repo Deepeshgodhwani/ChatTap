@@ -29,6 +29,8 @@ module.exports.chatSocket = (server) => {
         socket.in(members.user._id).emit("message_recieved",data);
       });
     });
+    
+  
 
     socket.on("group_created", (group) => {
       group.users.forEach((members) => {
@@ -36,11 +38,23 @@ module.exports.chatSocket = (server) => {
         socket.in(members.user._id).emit("created_group", group);
       });
     });
-
+ 
     socket.on("member_status",(data)=>{
               data.users.forEach(members=>{
                 socket.in(members.user).emit("groupRemoved", data.status);  
               })
+            })
+    socket.on("changed_groupImage",(data)=>{
+      data.chat.users.forEach(members=>{
+        socket.in(members.user._id).emit("toggleImage", data);  
+      })
     })
+
+    socket.on("changed_groupName",(data)=>{
+      data.chat.users.forEach(members=>{
+        socket.in(members.user._id).emit("toggleName", data);  
+      })
+    })
+
   });
 };

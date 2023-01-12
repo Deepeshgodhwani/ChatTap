@@ -137,7 +137,7 @@ module.exports.accessChat = async (req, res) => {
 
 module.exports.createGroup = async (req, res) => {
   try {
-    const { chatName, selectedUsersId } = req.body;
+    const { chatName, selectedUsersId,groupPic } = req.body;
     selectedUsersId.push({ user: req.user });
     if (selectedUsersId.length <= 2) {
       return res.status(400).json({
@@ -151,6 +151,7 @@ module.exports.createGroup = async (req, res) => {
       isGroupChat: true,
       users: selectedUsersId,
       admin: req.user,
+      profilePic:groupPic
     });
 
     if (req.body.pic) {
@@ -204,9 +205,7 @@ module.exports.accessGroupChat = async (req, res) => {
 
 module.exports.changeName = async (req, res) => {
   try {
-     console.log("reached");
     const { type, Id, name } = req.body;
-    console.log(req.body);
     if (type === "group") {
       let chatId= mongoose.Types.ObjectId(Id);
       let chat = await Chat.findById(chatId);
@@ -276,22 +275,22 @@ module.exports.addUser = async (req, res) => {
 
 module.exports.changePic = async (req, res) => {
   try {
-    console.log(req.query);
     const { isGroupChat, Id, pic } = req.query;
+    console.log(req.query);
 
-    if (isGroupChat) {
+    if (isGroupChat!='false') {
       let chat = await Chat.findById(Id);
       chat.set({ profilePic: pic });
       await chat.save();
     } else {
       let user = await User.findById(Id);
-      user.set({ avtar: pic });
+      user.avtar=pic;
       await user.save();
     }
 
     return res.send({ success: true });
   } catch (error) {
-    console.error("error in changin pic", error.message);
+    console.error("error in changing pic", error.message);
     res.status(200).send("Internal Server Error");
   }
 };
