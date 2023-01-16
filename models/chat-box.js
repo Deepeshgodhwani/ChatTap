@@ -13,9 +13,6 @@ const chatBoxSchema=mongoose.Schema({
         user:{
            type:mongoose.Schema.Types.ObjectId,
            ref:"user"
-        },isRemoved:{
-            type:Boolean,
-            default:false,
         },unseenMsg:{
             type:Number,
             default:0
@@ -29,13 +26,14 @@ const chatBoxSchema=mongoose.Schema({
     latestMessage:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'message'
-    },vanishMode:{
-        type:Boolean,
-        default:false
     },
     profilePic:{
         type:String,
         default:"https://cdn6.aptoide.com/imgs/1/2/2/1221bc0bdd2354b42b293317ff2adbcf_icon.png"
+    },
+    isDummy:{
+        type:Boolean,
+        default:false
     }
 },{
     timestamps:true

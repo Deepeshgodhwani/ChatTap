@@ -137,7 +137,8 @@ module.exports.accessChat = async (req, res) => {
 
 module.exports.createGroup = async (req, res) => {
   try {
-    const { chatName, selectedUsersId,groupPic } = req.body;
+    const { chatName, selectedUsersId,groupPicture } = req.body;
+    console.log(groupPicture);
     selectedUsersId.push({ user: req.user });
     if (selectedUsersId.length <= 2) {
       return res.status(400).json({
@@ -151,13 +152,9 @@ module.exports.createGroup = async (req, res) => {
       isGroupChat: true,
       users: selectedUsersId,
       admin: req.user,
-      profilePic:groupPic
+      profilePic:groupPicture
     });
 
-    if (req.body.pic) {
-      newChat.profilePic = req.body.pic;
-      newChat.save();
-    }
 
     let FULLCHAT = await Chat.findById(newChat._id)
       .populate({
@@ -229,14 +226,22 @@ module.exports.removeUser = async (req, res) => {
   try {
     const { chatId, userId } = req.query;
     let group = await Chat.findById(chatId);
-    group.users.forEach((members) => {
-      let memberId = members.user.toString();
-      if (memberId === userId) {
-        members.isRemoved = true;
-      }
-    });
+         
+     let index=-1;
+     let count=0;
+     console.log(group.users);
+     group.users.forEach(members=>{
+       let memberId=members.user.toString();
+       console.log(memberId, " and ",userId);
+          if(memberId===userId){
+             index=count;
+          }
+          count++;
+     })
+     console.log(index);
+     group.users.splice(index,1);
+    
     await group.save();
-    console.log(group.users);
 
     return res.send({ success: true });
   } catch (error) {
@@ -251,21 +256,11 @@ module.exports.addUser = async (req, res) => {
     let group = await Chat.findById(chatId);
 
     usersId.map((users) => {
-      let check = true;
-      group.users.map((member) => {
-        let memberId = member.user.toString();
-        if (memberId === users.user) {
-          member.isRemoved = false;
-          check = false;
-        }
-      });
-
-      if (check) {
-        group.users.push({ user: users.user, isRemoved: false, unseenMsge: 0 });
-      }
+        group.users.push({ user: users.user, unseenMsge: 0 });
     });
-    group.save();
+    await group.save();
 
+    console.log(group);
     return res.send({ success: true });
   } catch (error) {
     console.error("error in adding user", error.message);
@@ -326,3 +321,37 @@ module.exports.countUnseenMssge = async (req, res) => {
     res.status(200).send("Internal Server Error");
   }
 };
+
+module.exports.getCommonGroups =async(req,res)=>{
+
+     try {
+         
+      let chats =await Chat.find({isGroupChat:true,
+        $and: [
+          { users: { $elemMatch: { user: ObjectId(req.query.userId) } } },
+          { users: { $elemMatch: { user: ObjectId(req.user) } } },
+          ],
+          }).populate({
+            path: "users",
+            populate: {
+              path: "user",
+              ref: "user",
+            },
+          })
+          .populate({
+            path: "latestMessage",
+            ref: "message",
+            populate: {
+              path: "sender",
+              ref: "user",
+              select: "name,email,avtar",
+            },
+          })
+          .populate("admin", "-password");
+          return res.send(chats);
+        
+     } catch (error) {
+        console.error(error.message);
+        res.status(200).send("Internal Server Error");
+     }
+}
