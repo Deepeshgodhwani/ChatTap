@@ -1,3 +1,5 @@
+const message = require("../models/message");
+
 module.exports.chatSocket = (server) => {
   const io = require("socket.io")(server, {
     cors: {
@@ -9,13 +11,15 @@ module.exports.chatSocket = (server) => {
     console.log("connected to socket.io");
     socket.on("setup", (userData) => {
       socket.join(userData._id);
+      console.log("user joined",userData.name);
       socket.emit("connected");
     });
 
-    socket.on("join chat", (room) => {
-      socket.join(room);
-      console.log("user joined", room);
-    });
+    // socket.on("join chat", (room) => {
+    //   socket.join(room);
+    //   console.log("user joined", room);
+    // });
+     
 
     socket.on("new_message", (message) => {
       var chat = message.chatId;
@@ -29,6 +33,21 @@ module.exports.chatSocket = (server) => {
         socket.in(members.user._id).emit("message_recieved",data);
       });
     });
+
+
+    socket.on("update_Chatlist",(message)=>{
+      var chat = message.chatId;
+      if (!chat.users) return consol.log("chat users not defined");
+      console.log(chat);
+      chat.users.forEach((members) => {
+        if (members.user._id=== message.sender._id) return;
+        let data={
+             message:message,
+             receiverId:members.user._id
+        } 
+        socket.in(members.user._id).emit("latest_message",data);
+      });
+    })
     
   
 
@@ -41,7 +60,6 @@ module.exports.chatSocket = (server) => {
  
     socket.on("member_status",(data)=>{
               data.users.forEach(members=>{
-                 
                 socket.in(members.user).emit("groupRemoved", data.status);  
               })
             })

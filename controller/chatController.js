@@ -33,6 +33,7 @@ module.exports.savemessage = async (req, res) => {
           },
         },
       });
+      
     return res.send(detailedMessage);
   } catch (error) {
     console.error("error in saving messages", error.message);
@@ -110,6 +111,13 @@ module.exports.accessChat = async (req, res) => {
         },
       });
     if (isChat.length > 0) {
+      isChat[0].users.map(members=>{
+        let memberId=members.user._id.toString();
+         if(memberId===req.user){
+             members.unseenMsg=0;
+         }
+        })
+       await isChat[0].save();
       return res.send(isChat[0]);
     } else {
       let chat = await Chat.create({
@@ -193,6 +201,14 @@ module.exports.accessGroupChat = async (req, res) => {
       })
       .populate("admin", "-password");
 
+      chat.users.map(members=>{
+         let memberId=members.user._id.toString();
+          if(memberId===req.user){
+              members.unseenMsg=0;
+          }
+      })
+
+      await chat.save();
     return res.send(chat);
   } catch (error) {
     console.error("error in access group chat", error.message);
@@ -309,7 +325,9 @@ module.exports.countUnseenMssge = async (req, res) => {
     } else {
       chat.users.map((members) => {
         if (members.user._id == userId) {
+          console.log(members.unseenMsg);
           members.unseenMsg = members.unseenMsg + 1;
+          console.log(members.unseenMsg);
         }
       });
     }
@@ -355,3 +373,6 @@ module.exports.getCommonGroups =async(req,res)=>{
         res.status(200).send("Internal Server Error");
      }
 }
+
+
+
