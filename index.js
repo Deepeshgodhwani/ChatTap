@@ -1,34 +1,30 @@
 const express = require("express");
 const port = 7000;
 const db = require("./config/mongoos");
-const cors = require('cors');
+const cors = require("cors");
 const app = express();
-
-
 
 app.use(cors());
 app.use(express.json());
 
+//setting up chat socket //
+const chatServer = require("http").Server(app);
+const chatSocket = require("./config/chatSocket").chatSocket(chatServer);
 
+app.use("/uploads", express.static(__dirname + "/uploads"));
 
+chatServer.listen(4000, (err) => {
+  if (err) {
+    ("error in listening chat server");
+  } else {
+    console.log("chat server is running successfully on port : 4000");
+  }
+});
 
-const chatServer=require('http').Server(app);
-
-const chatSocket=require('./config/chatSocket').chatSocket(chatServer);
-
-app.use('/uploads',express.static(__dirname+'/uploads'));
-chatServer.listen(4000,(err)=>{
-        if(err){"error in listening chat server"}else{
-          console.log("chat server is running successfully on port : 4000");
-        }                     
-})
-
-
-
-
-
+//api for authentication  //
 app.use("/api/auth", require("./routes/auth"));
-app.use("/api/chat",require('./routes/chat'));
+//api for chat //
+app.use("/api/chat", require("./routes/chat"));
 
 app.listen(port, function (err) {
   if (err) {

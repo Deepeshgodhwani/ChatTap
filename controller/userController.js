@@ -1,5 +1,8 @@
 const User = require("../models/user");
 
+
+// api for searching user from userlist //
+
 module.exports.searchUser = async (req, res) => {
   const keyword = req.query.search
     ? {

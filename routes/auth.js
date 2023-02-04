@@ -30,7 +30,7 @@ router.post(
 
       let userr = await User.findOne({ email: req.body.email });
       if (userr) {
-        return res.send({ error: "user is already exists" });
+        return res.send({ error: [{ msg: "User is already exist" }] });
       }
 
       // to encrypt password before saving //
@@ -57,6 +57,7 @@ router.post(
   }
 );
 
+// logging up user //
 router.post(
   "/login",
   [
@@ -75,7 +76,7 @@ router.post(
         // sending error if user does not exist//
         return res.send({
           error: true,
-          message: "please enter valid login credentials",
+          message: "Please enter valid login credentials",
         });
       } else {
         // checking the encrypted password whether its matched with the saved one or not //
@@ -83,7 +84,7 @@ router.post(
         if (!check) {
           return res.send({
             error: true,
-            message: "please enter valid login credentials",
+            message: "Please enter valid login credentials",
           });
         }
 
@@ -102,6 +103,8 @@ router.post(
   }
 );
 
+//fetching log user details //
+
 router.get("/getUser", fetchUser, async (req, res) => {
   try {
     let userId = req.user;
@@ -110,7 +113,7 @@ router.get("/getUser", fetchUser, async (req, res) => {
       return res.send(user);
     }
 
-    return res.send("please enter valid login credentials");
+    return res.send("Please enter valid login credentials");
   } catch (error) {
     console.error(error.message);
     res.status(200).send("Internal Server Error");

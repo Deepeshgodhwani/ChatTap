@@ -1,4 +1,7 @@
-const message = require("../models/message");
+const chatController = require("../controller/chatController");
+const { addCount } = chatController;
+
+
 
 module.exports.chatSocket = (server) => {
   const io = require("socket.io")(server, {
@@ -6,50 +9,67 @@ module.exports.chatSocket = (server) => {
       origin: "*",
     },
   });
-
-  io.on("connection", (socket) => {
-    console.log("connected to socket.io");
-    socket.on("setup", (userData) => {
-      socket.join(userData._id);
-      console.log("user joined",userData.name);
-      socket.emit("connected");
+      
+    //setup socket connection //
+    
+    io.on("connection", (socket) => {
+        console.log("connected to socket.io");
+        socket.on("setup", (userData) => {
+        socket.join(userData._id);
+        console.log("user joined", userData.name);
+        socket.emit("connected");
     });
 
-    // socket.on("join chat", (room) => {
-    //   socket.join(room);
-    //   console.log("user joined", room);
-    // });
-     
+   
+    //new message triggered //
 
     socket.on("new_message", (message) => {
       var chat = message.chatId;
-      if (!chat.users) return consol.log("chat users not defined");
+      if (!chat.users) return console.log("chat users not defined");
       chat.users.forEach((members) => {
-        if (members.user._id=== message.sender._id) return;
-        let data={
-             message:message,
-             receiverId:members.user._id
-        }
-        socket.in(members.user._id).emit("message_recieved",data);
+        if (members.user._id === message.sender._id) return;
+        let data = {
+          message: message,
+          receiverId: members.user._id,
+        };
+        socket.in(members.user._id).emit("message_recieved", data);
       });
+
+      if (message.removedUserId) {
+        let data = {
+          message: message,
+          receiverId: message.removedUserId,
+        };
+        socket.in(message.removedUserId).emit("message_recieved", data);
+      }
     });
 
 
-    socket.on("update_Chatlist",(message)=>{
+    // update recent message //
+
+    socket.on("update_Chatlist", (message) => {
       var chat = message.chatId;
-      if (!chat.users) return consol.log("chat users not defined");
-      console.log(chat);
-      chat.users.forEach((members) => {
-        if (members.user._id=== message.sender._id) return;
-        let data={
-             message:message,
-             receiverId:members.user._id
-        } 
-        socket.in(members.user._id).emit("latest_message",data);
+      if (!chat.users) return console.log("chat users not defined");
+      chat.users.forEach(async (members) => {
+        if (members.user._id === message.sender._id) return;
+        let users = await addCount(message.chatId._id, members.user._id);
+        let data = {
+          message: message,
+          users: users,
+        };
+        socket.in(members.user._id).emit("latest_message", data);
       });
-    })
-    
-  
+
+      if (message.removedUserId) {
+        let data = {
+          message: message,
+          receiverId: message.removedUserId,
+        };
+        socket.in(message.removedUserId).emit("latest_message", data);
+      }
+    });
+
+    // on creating group //
 
     socket.on("group_created", (group) => {
       group.users.forEach((members) => {
@@ -57,33 +77,52 @@ module.exports.chatSocket = (server) => {
         socket.in(members.user._id).emit("created_group", group);
       });
     });
- 
-    socket.on("member_status",(data)=>{
-              data.users.forEach(members=>{
-                socket.in(members.user).emit("groupRemoved", data.status);  
-              })
-            })
-    socket.on("changed_groupImage",(data)=>{
-      data.chat.users.forEach(members=>{
-        if (members.user._id == data.chat.admin._id) return;
-        socket.in(members.user._id).emit("toggleImage", data);  
-      })
-    })
 
-    socket.on("changed_groupName",(data)=>{
-      data.chat.users.forEach(members=>{
-        if (members.user._id == data.chat.admin._id) return;
-        socket.in(members.user._id).emit("toggleName", data);  
-      })
-    })
 
-    socket.on("added_users",data=>{
-          console.log(data)
-         data.group.users.forEach(members=>{
+    //update user exist in group or not //
+
+    socket.on("member_status", (data) => {
+      data.users.forEach((members) => {
+        socket.in(members.user).emit("groupRemoved", data);
+      });
+    });
+
+
+    // on changing group image //
+
+    socket.on("changed_groupImage", (data) => {
+      data.chat.users.forEach((members) => {
+        if (members.user._id == data.logUser._id) return;
+        socket.in(members.user._id).emit("toggleImage", data);
+      });
+    });
+
+    // on changing group name //
+
+    socket.on("changed_groupName", (data) => {
+      data.chat.users.forEach((members) => {
+        if (members.user._id == data.logUser._id) return;
+        socket.in(members.user._id).emit("toggleName", data);
+      });
+    });
+
+
+    //update users list while removing or adding //
+
+    socket.on("change_users", (data) => {
+      data.group.users.forEach((members) => {
         if (members.user._id == data.group.admin._id) return;
-            socket.in(members.user._id).emit("updateUsers",data.newMembers);
-         })
-    })
+        socket.in(members.user._id).emit("updateUsers", data);
+      });
+    });
 
+    //toggle typing //
+    
+    socket.on("toggleTyping", (data) => {
+      data.chat.users.forEach((members) => {
+        if (members.user._id == data.user._id) return;
+        socket.in(members.user._id).emit("isTyping", data);
+      });
+    });
   });
 };
