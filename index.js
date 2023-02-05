@@ -1,17 +1,25 @@
+const dotenv = require("dotenv").config();
 const express = require("express");
-const port = 7000;
-const db = require("./config/mongoos");
 const cors = require("cors");
+const path = require("path");
+const exp = require("constants");
+const connectDB = require("./config/mongoos");
 const app = express();
+const PORT = process.env.PORT;
+
+
+
+connectDB();
 
 app.use(cors());
 app.use(express.json());
-
+dotenv;
 //setting up chat socket //
 const chatServer = require("http").Server(app);
 const chatSocket = require("./config/chatSocket").chatSocket(chatServer);
 
 app.use("/uploads", express.static(__dirname + "/uploads"));
+
 
 chatServer.listen(4000, (err) => {
   if (err) {
@@ -21,15 +29,38 @@ chatServer.listen(4000, (err) => {
   }
 });
 
+
+
 //api for authentication  //
 app.use("/api/auth", require("./routes/auth"));
 //api for chat //
 app.use("/api/chat", require("./routes/chat"));
 
-app.listen(port, function (err) {
+// ------------------------Deployment---------------
+
+const __dirname1 = path.resolve();
+
+if (process.env.Node_ENV === "production"){
+    app.use(express.static(path.join(__dirname1,'frontend_build')))
+
+    app.get('*',(req,res)=>{
+      res.sendFile(path.resolve(__dirname1,"frontend_build","index.html"))
+    });
+
+}else{
+    app.get("/", (req, res) => {
+      res.send("API is Running Successfully");
+    });
+}
+
+
+
+//------------------------Deployment-----------
+
+app.listen(PORT, function (err) {
   if (err) {
-    console.log("error in running server", port);
+    console.log("error in running server", PORT);
   } else {
-    console.log("server is running succefully on port:", port);
+    console.log("server is running succefully on port:", PORT);
   }
 });

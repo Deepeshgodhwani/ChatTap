@@ -5,7 +5,7 @@ const { body, validationResult } = require("express-validator");
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const jwtSecret = "dichikdichik";
+const jwtSecret = process.env.JWT_SECRET;
 
 // creating user signing up  //
 router.post(
@@ -107,6 +107,7 @@ router.post(
 
 router.get("/getUser", fetchUser, async (req, res) => {
   try {
+    console.log(req.user);
     let userId = req.user;
     let user = await User.findById(userId).select("-password");
     if (user) {
