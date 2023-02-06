@@ -1,26 +1,23 @@
 const chatController = require("../controller/chatController");
 const { addCount } = chatController;
 
-
-
 module.exports.chatSocket = (server) => {
   const io = require("socket.io")(server, {
     cors: {
       origin: "*",
     },
   });
-      
-    //setup socket connection //
-    
-    io.on("connection", (socket) => {
-        console.log("connected to socket.io");
-        socket.on("setup", (userData) => {
-        socket.join(userData._id);
-        console.log("user joined", userData.name);
-        socket.emit("connected");
+
+  //setup socket connection //
+
+  io.on("connection", (socket) => {
+    console.log("connected to socket.io");
+    socket.on("setup", (userData) => {
+      socket.join(userData._id);
+      console.log("user joined", userData.name);
+      socket.emit("connected");
     });
 
-   
     //new message triggered //
 
     socket.on("new_message", (message) => {
@@ -43,7 +40,6 @@ module.exports.chatSocket = (server) => {
         socket.in(message.removedUserId).emit("message_recieved", data);
       }
     });
-
 
     // update recent message //
 
@@ -78,7 +74,6 @@ module.exports.chatSocket = (server) => {
       });
     });
 
-
     //update user exist in group or not //
 
     socket.on("member_status", (data) => {
@@ -86,7 +81,6 @@ module.exports.chatSocket = (server) => {
         socket.in(members.user).emit("groupRemoved", data);
       });
     });
-
 
     // on changing group image //
 
@@ -106,7 +100,6 @@ module.exports.chatSocket = (server) => {
       });
     });
 
-
     //update users list while removing or adding //
 
     socket.on("change_users", (data) => {
@@ -117,7 +110,7 @@ module.exports.chatSocket = (server) => {
     });
 
     //toggle typing //
-    
+
     socket.on("toggleTyping", (data) => {
       data.chat.users.forEach((members) => {
         if (members.user._id == data.user._id) return;

@@ -4,27 +4,26 @@ const Message = require("../models/message");
 const User = require("../models/user");
 var mongoose = require("mongoose");
 
-
- //saving new message in database  //
+//saving new message in database  //
 
 module.exports.savemessage = async (req, res) => {
   try {
     const { content, chatId } = req.body;
-  
+
     // creating new message  //
     let message = await Message.create({
       content,
       sender: req.user,
       chatId,
     });
-     
-   //enabling true if it is annoucement message //
+
+    //enabling true if it is annoucement message //
     if (req.body.noty) {
       message.noty = true;
       message.save();
     }
 
-    //populating message chat  // 
+    //populating message chat  //
 
     let chat = await Chat.findById(chatId);
     chat.latestMessage = message._id;
@@ -42,15 +41,13 @@ module.exports.savemessage = async (req, res) => {
       });
 
     return res.send(detailedMessage);
-
   } catch (error) {
     console.error("error in saving messages", error.message);
     res.status(400).send("Internal Server Error");
   }
 };
 
-
- // fetch previous messages of chat //
+// fetch previous messages of chat //
 
 module.exports.fetchMessages = async (req, res) => {
   try {
@@ -67,11 +64,10 @@ module.exports.fetchMessages = async (req, res) => {
   }
 };
 
-
- // fetch recent chats list  //
+// fetch recent chats list  //
 
 module.exports.fetchChat = async (req, res) => {
-  try { 
+  try {
     let chats = await Chat.find({
       //fetching all chats with the log user //
       users: { $elemMatch: { user: ObjectId(req.user) } },
@@ -93,15 +89,13 @@ module.exports.fetchChat = async (req, res) => {
       .sort("-updatedAt");
 
     return res.send(chats);
-
   } catch (error) {
     console.error("error in fetching recent chats", error.message);
     res.status(200).send("Internal Server Error");
   }
 };
 
- 
- // to fetch single chat //
+// to fetch single chat //
 
 module.exports.accessChat = async (req, res) => {
   try {
@@ -142,13 +136,12 @@ module.exports.accessChat = async (req, res) => {
       return res.send(isChat[0]);
     } else {
       // if there is no such chat  //
-            //new chat created  
+      //new chat created
       let chat = await Chat.create({
         isGroupChat: false,
         users: [{ user: req.user }, { user: userTwo }],
       });
-          
-    
+
       //populating chat users details //
       let fullChat = await Chat.findById(chat._id).populate({
         path: "users",
@@ -168,13 +161,12 @@ module.exports.accessChat = async (req, res) => {
   }
 };
 
-  
- // to fetch group chat //
- 
+// to fetch group chat //
+
 module.exports.accessGroupChat = async (req, res) => {
   try {
-     //fetching group chat with group id and populating group users 
-                 //,latest message and latest message sender //
+    //fetching group chat with group id and populating group users
+    //,latest message and latest message sender //
     let chat = await Chat.findById(req.query.chatId)
       .populate({
         path: "users",
@@ -194,13 +186,13 @@ module.exports.accessGroupChat = async (req, res) => {
       })
       .populate("admin", "-password");
 
-    //neutralising users unseen message count //   
+    //neutralising users unseen message count //
     chat.users.map((members) => {
       let memberId = members.user._id.toString();
       if (memberId === req.user) {
         members.unseenMsg = 0;
       }
-     });
+    });
 
     await chat.save();
     return res.send(chat);
@@ -210,7 +202,7 @@ module.exports.accessGroupChat = async (req, res) => {
   }
 };
 
-  // to create group //
+// to create group //
 
 module.exports.createGroup = async (req, res) => {
   try {
@@ -249,9 +241,8 @@ module.exports.createGroup = async (req, res) => {
   }
 };
 
-    
 // to change name of group chat or single chat //
- 
+
 module.exports.changeName = async (req, res) => {
   try {
     const { type, Id, name } = req.body;
@@ -273,8 +264,8 @@ module.exports.changeName = async (req, res) => {
     res.status(200).send("Internal Server Error");
   }
 };
- 
-   //to remove user from group //
+
+//to remove user from group //
 
 module.exports.removeUser = async (req, res) => {
   try {
@@ -301,7 +292,7 @@ module.exports.removeUser = async (req, res) => {
   }
 };
 
-   // to add user in group //
+// to add user in group //
 
 module.exports.addUser = async (req, res) => {
   try {
@@ -310,7 +301,7 @@ module.exports.addUser = async (req, res) => {
 
     usersId.map((users) => {
       let index = group.users.indexOf({ user: users.user, unseenMsge: 0 });
-      
+
       group.users.push({ user: users.user, unseenMsge: 0 });
     });
     await group.save();
@@ -322,7 +313,7 @@ module.exports.addUser = async (req, res) => {
   }
 };
 
-  // to change profile picture of group chat or single chat //
+// to change profile picture of group chat or single chat //
 
 module.exports.changePic = async (req, res) => {
   try {
@@ -345,11 +336,12 @@ module.exports.changePic = async (req, res) => {
   }
 };
 
-  // to update count of unseen messages //
+// to update count of unseen messages //
 
 module.exports.countUnseenMssge = async (req, res) => {
   try {
     const { chatId, userId } = req.query;
+
     let chat = await Chat.findById(chatId).populate({
       path: "users",
       populate: {
@@ -371,8 +363,7 @@ module.exports.countUnseenMssge = async (req, res) => {
   }
 };
 
-  
- //to add count of unseen messages //
+//to add count of unseen messages //
 
 module.exports.addCount = async (chatId, userId) => {
   try {
@@ -395,8 +386,8 @@ module.exports.addCount = async (chatId, userId) => {
     console.error(error.message);
   }
 };
- 
- // to get mutual groups 
+
+// to get mutual groups
 
 module.exports.getCommonGroups = async (req, res) => {
   try {
