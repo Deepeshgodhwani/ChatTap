@@ -14,8 +14,6 @@
     <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="mongodb"/>
 </p>
 
-<h3 align="center"><a href="https://chattap.onrender.com/"><strong>Want to see live preview »</strong></a></h3>
-
 <p align="center"> 
     <br />&#10023;
     <a href="#Demo">View Demo</a>   &#10023;  
@@ -24,8 +22,11 @@
     <a href="#Contact">Author</a> &#10023;
   </p>
   
+  <br/>
+  
   ChatTap is real-time chat web app. AES(Advanced Encryption Standard) algorithm is used for encrypting amd decrypting the messages
   
+  <br/>
  
   
   ![1](https://res.cloudinary.com/dynjwlpl3/image/upload/v1676485150/Chat-app/chatFront_qnidky.png)
