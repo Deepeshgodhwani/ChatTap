@@ -9,6 +9,7 @@
      <img src="https://img.shields.io/badge/JAVASCRIPT-%230077B5.svg?&style=for-the-badge&color=black&logo=JAVASCRIPT&logoColor=yellow" alt="javascript"/>
     <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="reactjs" />
     <img src="https://img.shields.io/badge/Chakra%20UI-3bc7bd?style=for-the-badge&logo=chakraui&logoColor=white" alt="chakra-ui"/>  
+    <img src="https://img.shields.io/badge/Socket.io-010101.svg?style=for-the-badge&logo=socketdotio&logoColor=white" alt="socket.io" />
     <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="nodejs" />
     <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="expressjs"/>
     <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="mongodb"/>
@@ -43,6 +44,8 @@
 - Create group and admin authority feature
 - Group Profile picture and group name update feacture
 - Admin authority to Add/remove from group
+- Real-time group notifications
+- Real-time unseen messages count 
 - Exit from group
 - View user Details
 <br />
@@ -89,7 +92,7 @@ This project was built using React, Chakra UI, CSS, JavaScript,Cryptojs, Node JS
 ### Setup
 
 
-The project repository can be found in [https://github.com/Deepeshgodwani/ChatTap) or just clone the project using this command. 
+The project repository can be found in [GitHub link](https://github.com/Deepeshgodwani/ChatTap) or just clone the project using this command. 
 
 
 ```
@@ -101,7 +104,7 @@ Using HTTPS
 + Open terminal on your workspace with
 
 ```
-cd /home/workspace/Mini-Store
+cd /home/workspace/ChatTap
 ```
 
 
