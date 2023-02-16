@@ -24,7 +24,7 @@
   
   <br/>
   
-  ChatTap is real-time chat web app. AES(Advanced Encryption Standard) algorithm is used for encrypting amd decrypting the messages
+  This is a web-based chat application that provides end-to-end encrypted chat functionality to its users. The app is designed to be user-friendly and secure, allowing users to have private and secure conversations with each other.The app is built using modern web technologies, including React.js for the front-end and Node.js for the back-end. The application uses a secure communication protocol that ensures all messages are encrypted from the sender to the recipient.
   
   <br/>
  
