@@ -50,7 +50,7 @@
 - View user Details
 <br />
 
-## Glimpses of Mini-Store 🙈 :
+## Glimpses of ChatTap 🙈 :
 
 
 <table>
