@@ -1,6 +1,6 @@
 <h1 align="center">ChatTap</h1> 
 
-<h2 align="center">It's a MERN Stack Real-time end to end encrypted web app</h2>
+<h2 align="center">It's a MERN Stack Real-time end to end encrypted chat web app</h2>
 
 <br />
 <p align="center">
