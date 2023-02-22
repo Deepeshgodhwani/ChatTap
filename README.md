@@ -72,7 +72,7 @@
 
 ## Demo
 
-[Check here to see the presentation video of this project](https://www.linkedin.com/posts/m-sehrawat_programming-marketing-computerscience-activity-6932731204051816448-q0vg?utm_source=linkedin_share&utm_medium=member_desktop_web)
+[Check here to see the presentation video of this project](https://www.linkedin.com/feed/update/urn:li:activity:7033886022119632896/)
 
 
 <br/>
