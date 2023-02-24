@@ -36,18 +36,16 @@
   
 ## 🚀 Features
 - Login/Signup User Account
-- JWT (Json Web Token) Authentication and BcryptJS Password Hashing
-- Profile picture and username update feature
-- Real-time search of users
-- One to one chat
-- Group chat
-- Create group and admin authority feature
-- Group Profile picture and group name update feacture
-- Admin authority to Add/remove from group
-- Real-time group notifications
-- Real-time unseen messages count 
-- Exit from group
-- View user Details
+- JWT (Json Web Token) Authentication and BcryptJS Password Hashing.
+- Profile picture and username update feature.
+- Real-time search of users.
+- One-to-one / Group chat.
+- Create group and admin authority features ( Add / Remove from the group ).
+- Exit from group fearture.
+- View user / Group info .
+- Group Profile picture and group name update feacture.
+- Real-time group notifications / Unseen messages count.
+
 <br />
 
 ## Glimpses of ChatTap 🙈 :
