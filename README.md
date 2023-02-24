@@ -35,7 +35,7 @@
   <br />
   
 ## 🚀 Features
-- Login/Signup User Account
+- Login/Signup User Account.
 - JWT (Json Web Token) Authentication and BcryptJS Password Hashing.
 - Profile picture and username update feature.
 - Real-time search of users.
