@@ -90,13 +90,13 @@ This project was built using React, Chakra UI, CSS, JavaScript,Cryptojs, Node JS
 ### Setup
 
 
-The project repository can be found in [GitHub link](https://github.com/Deepeshgodwani/ChatTap) or just clone the project using this command. 
+The project repository can be found in [GitHub link](https://github.com/Deepeshgodhwani/ChatTap) or just clone the project using this command. 
 
 
 ```
 Using HTTPS
 
-# git clone  https://github.com/Deepeshgodwani/ChatTap.git
+# git clone  https://github.com/Deepeshgodhwani/ChatTap.git
 ```
 
 + Open terminal on your workspace with
@@ -179,12 +179,10 @@ To run this project, you will need to add the following environment variables to
 
 If you want to contact me, you can reach me through below handles.
 
-[![linkedin](https://img.shields.io/badge/Deepesh_Godwani-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/deeepesh-godhwani-4269531b0/)
-[![Twitter](https://img.shields.io/badge/Deepesh_Godwani-20232A?style=for-the-badge&logo=Github&logoColor=white)](https://github.com/Deepeshgodhwani)
+[![linkedin](https://img.shields.io/badge/Deepesh_Godhwani-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/deeepesh-godhwani-4269531b0)
+[![Twitter](https://img.shields.io/badge/Deepesh_Godhwani-20232A?style=for-the-badge&logo=Github&logoColor=white)](https://github.com/Deepeshgodhwani)
 
-© 2023 Deepesh Godwani
-
-
+© 2023 Deepesh Godhwani
 
 ## Show your support
 
